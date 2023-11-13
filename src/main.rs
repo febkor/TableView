@@ -2,6 +2,8 @@
 // hide console window on Windows in release
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use eframe::Renderer;
+
 mod grid;
 mod reader;
 
@@ -12,7 +14,10 @@ fn main() -> eframe::Result<()> {
 
     use grid::App;
 
-    let native_options = eframe::NativeOptions::default();
+    let native_options = eframe::NativeOptions {
+        renderer: Renderer::Wgpu,
+        ..Default::default()
+    };
     eframe::run_native(
         "TableView",
         native_options,
