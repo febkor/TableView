@@ -2,7 +2,7 @@ use std::path::Path;
 
 use egui::{
     text::{LayoutJob, TextWrapping},
-    Align, FontId, Layout, RichText, ScrollArea, Style, TextFormat,
+    Align, FontId, Layout, RichText, ScrollArea, Style, TextFormat, ViewportCommand,
 };
 use egui_extras::{Column, TableBuilder};
 use polars::prelude::DataFrame;
@@ -65,7 +65,7 @@ impl eframe::App for App {
             egui::menu::bar(ui, |ui| {
                 ui.menu_button("File", |ui| {
                     if ui.button("Quit").clicked() {
-                        _frame.close();
+                        ctx.send_viewport_cmd(ViewportCommand::Close);
                     }
                 });
             });
@@ -134,7 +134,7 @@ impl eframe::App for App {
                 .columns(Column::auto().at_least(20.0).resizable(true), data.width());
 
             const ROW_HEIGHT: f32 = 16.0;
-            const ROW_HEIGHT_HEADER: f32 = ROW_HEIGHT + 2.0;
+            const ROW_HEIGHT_HEADER: f32 = ROW_HEIGHT * 2.0 + 2.0;
             const FONT_SIZE: f32 = 12.0;
             const FONT_SIZE_HEADER: f32 = 12.0 + 2.0;
 
@@ -170,8 +170,9 @@ impl eframe::App for App {
                 .body(|body| {
                     let total_rows = usize::min(1000, data.height());
 
-                    body.rows(ROW_HEIGHT, total_rows, |row_idx, mut row| {
+                    body.rows(ROW_HEIGHT, total_rows, |mut row| {
                         // TODO: avoid vec alloc
+                        let row_idx = row.index();
                         let data_row = data.get_row(row_idx).expect("should get row");
                         let elements = data_row.0;
 
