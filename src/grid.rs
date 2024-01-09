@@ -154,15 +154,16 @@ impl eframe::App for App {
                     for i in 0..col_names.len() {
                         header.col(|ui| {
                             let label = format!("{}\n[{}]", &col_names[i], &col_types[i]);
+                            let formatted_label = egui::Label::new(
+                                RichText::new(label)
+                                    .font(egui::FontId::monospace(FONT_SIZE_HEADER))
+                                    .strong(),
+                            )
+                            .wrap(false);
+
                             ui.with_layout(
                                 Layout::default().with_cross_align(Align::Center),
-                                |ui| {
-                                    ui.label(
-                                        RichText::new(label)
-                                            .font(egui::FontId::monospace(FONT_SIZE_HEADER))
-                                            .strong(),
-                                    )
-                                },
+                                |ui| ui.add(formatted_label),
                             );
                         });
                     }
